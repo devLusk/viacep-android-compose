@@ -5,6 +5,8 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -24,6 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -50,7 +53,7 @@ class MainActivity : ComponentActivity() {
 fun ViacepSearch(modifier: Modifier = Modifier) {
     val context = LocalContext.current
 
-    var address by remember { mutableStateOf(AddressResponse()) }
+    var address by remember { mutableStateOf<AddressResponse?>(null) }
     var cepInput by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
 
@@ -104,17 +107,28 @@ fun ViacepSearch(modifier: Modifier = Modifier) {
                 Text("SEARCH CEP")
             }
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
             Box(
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .background(Color.LightGray.copy(alpha = 0.4f), RoundedCornerShape(10.dp))
+                    .padding(16.dp)
+                    .fillMaxWidth()
             ) {
                 if (isLoading == true) {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 } else {
-                    println(address.bairro) // TODO: Printando toda vez que redesenha a tela (ARRUMAR)
+                    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                        Text(text = "CEP: ${address?.cep}")
+                        Text(text = "Logradouro: ${address?.logradouro}")
+                        Text(text = "Bairro: ${address?.bairro}")
+                        Text(text = "Localidade: ${address?.localidade}")
+                        Text(text = "UF: ${address?.uf}")
+                        Text(text = "Estado: ${address?.estado}")
+                    }
                 }
             }
+
         }
     }
 }
