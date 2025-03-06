@@ -28,7 +28,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.github.devlusk.viacep_android_compose.compose.CepInputField
+import com.github.devlusk.viacep_android_compose.data.AddressResponse
 import com.github.devlusk.viacep_android_compose.ui.theme.ViacepandroidcomposeTheme
+import com.google.gson.Gson
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -48,33 +50,29 @@ class MainActivity : ComponentActivity() {
 fun ViacepSearch(modifier: Modifier = Modifier) {
     val context = LocalContext.current
 
+    var address by remember { mutableStateOf(AddressResponse()) }
     var cepInput by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
 
     fun getAddress() {
-        println("Antes da thread")
         Thread {
-            println("Inicio da thread")
             val url = URL("https://viacep.com.br/ws/$cepInput/json/")
-            var json: String = ""
 
             cepInput = ""
             isLoading = true
 
             with(url.openConnection() as HttpURLConnection) {
-                requestMethod = "GET"  // optional default is GET
+                requestMethod = "GET"
 
                 println("\nSent 'GET' request to URL : $url; Response Code : $responseCode")
 
-                json = inputStream.bufferedReader().readText()
+                val json = inputStream.bufferedReader().readText()
 
-                println(json)
+                address = Gson().fromJson(json, AddressResponse::class.java)
             }
 
             isLoading = false
-            println("Fim da thread")
         }.start()
-        println("Depois da thread")
     }
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
@@ -113,6 +111,8 @@ fun ViacepSearch(modifier: Modifier = Modifier) {
             ) {
                 if (isLoading == true) {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                } else {
+                    println(address.bairro) // TODO: Printando toda vez que redesenha a tela (ARRUMAR)
                 }
             }
         }
