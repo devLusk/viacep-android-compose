@@ -97,7 +97,7 @@ fun ViacepSearch(modifier: Modifier = Modifier) {
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(10.dp),
                 onClick = {
-                    if (cepInput.length < 8) {
+                    if (cepInput.length < 8 || cepInput.length > 8) {
                         Toast.makeText(context, "Error: Invalid CEP", Toast.LENGTH_SHORT).show()
                     } else {
                         getAddress()
@@ -114,21 +114,28 @@ fun ViacepSearch(modifier: Modifier = Modifier) {
                     .background(Color.LightGray.copy(alpha = 0.4f), RoundedCornerShape(10.dp))
                     .padding(16.dp)
                     .fillMaxWidth()
+                    .height(300.dp)
             ) {
                 if (isLoading == true) {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-                } else {
+                    CircularProgressIndicator(Modifier.align(Alignment.Center))
+                }
+
+                if (address !== null) {
                     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                        Text(text = "CEP: ${address?.cep}")
-                        Text(text = "Logradouro: ${address?.logradouro}")
-                        Text(text = "Bairro: ${address?.bairro}")
-                        Text(text = "Localidade: ${address?.localidade}")
-                        Text(text = "UF: ${address?.uf}")
-                        Text(text = "Estado: ${address?.estado}")
+                        Text(text = "CEP: ${address?.cep ?: ""}")
+                        Text(text = "Logradouro: ${address?.logradouro ?: ""}")
+                        Text(text = "Bairro: ${address?.bairro ?: ""}")
+                        Text(text = "Localidade: ${address?.localidade ?: ""}")
+                        Text(text = "UF: ${address?.uf ?: ""}")
+                        Text(text = "Estado: ${address?.estado ?: ""}")
                     }
+                } else {
+                    Text(
+                        "Insert a CEP...",
+                        Modifier.align(Alignment.Center)
+                    )
                 }
             }
-
         }
     }
 }
